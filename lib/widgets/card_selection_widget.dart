@@ -21,7 +21,7 @@ class CardSelectionWidget extends StatelessWidget {
           ? RoundedRectangleBorder(
               side:
                   BorderSide(color: Theme.of(context).primaryColor, width: 3.0),
-              borderRadius: BorderRadius.circular(8))
+              borderRadius: BorderRadius.circular(12))
           : null,
       child: CheckboxListTile(
         activeColor: Theme.of(context).primaryColor,

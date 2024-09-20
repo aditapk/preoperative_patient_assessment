@@ -64,3 +64,21 @@ enum Other {
   Morbid_obesity,
   Operation_need_post_operative_PICU,
 }
+
+List<String> departments = [
+  "ENT",
+  "EYE",
+  "CVT Surgery",
+  "General Surgery",
+  "Pediatric Surgery",
+  "Plastic Surgery",
+  "Trauma Surgery",
+  "Urologic Surgery",
+  "OB-Gyn",
+  "Orthopedic",
+  "Pediatrics",
+  "Internal Medicine",
+  "Radiology and Intervention",
+  "Rehabilitation",
+  "Psychiatry",
+];

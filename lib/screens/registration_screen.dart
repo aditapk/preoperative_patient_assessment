@@ -6,6 +6,7 @@ import 'package:preoperative_patient_assessment/controllers/patient_information_
 import 'package:preoperative_patient_assessment/main.dart';
 import 'package:preoperative_patient_assessment/screens/cardiovascular_screen.dart';
 import 'package:preoperative_patient_assessment/screens/comorbidity_screen.dart';
+import 'package:preoperative_patient_assessment/screens/summary_registeration_screen.dart';
 import 'package:preoperative_patient_assessment/screens/type_of_surgery.dart';
 
 import 'risk_for_operation_bleeding_screen.dart';
@@ -266,7 +267,7 @@ class _RegistrationNo1ScreenState extends State<RegistrationScreen> {
                 patientInformationController.updatePatientSurgeryInfo();
 
                 //patientInformationController.addCurrenttoInfo();
-                Get.off(() => const HomePage());
+                Get.off(() => const SummaryRegisterationScreen());
               }),
           SpeedDialChild(
               child: const Icon(

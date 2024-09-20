@@ -41,7 +41,7 @@ class CustomHeaderWidget extends StatelessWidget {
             style: const TextStyle(
                 letterSpacing: 0.8,
                 color: Colors.white,
-                fontSize: 18,
+                fontSize: 26,
                 fontWeight: FontWeight.bold),
           ),
         ],
