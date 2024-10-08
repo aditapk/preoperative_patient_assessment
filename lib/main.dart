@@ -1,35 +1,27 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 //import 'package:device_preview/device_preview.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:preoperative_patient_assessment/color.dart';
-import 'package:preoperative_patient_assessment/constant.dart';
-import 'package:preoperative_patient_assessment/controllers/patient_information_controller.dart';
-import 'package:preoperative_patient_assessment/models/patient_information_model.dart';
-
+import 'color.dart';
 import 'controllers/app_state_controller.dart';
-import 'screens/adult_evaluation/adult_evaluation_screen.dart';
-import 'screens/cardiovascular_screen.dart';
-import 'screens/consult_screen.dart/pediatrics_consult_screen.dart';
-import 'screens/doctor_login_screen.dart';
-import 'screens/major_operation_screen.dart';
-import 'screens/obesity_evaluation/obesity_evaluation_screen.dart';
-import 'screens/patient_information/patient_information_screen.dart';
-import 'screens/patient_registeration_detail_screen.dart';
-import 'screens/pediatrics_evaluation/pediatrics_evaluation_screen.dart';
-import 'screens/pediatrics_evaluation/pediatrics_oneday_surgery_case_screen.dart';
-import 'screens/pediatrics_evaluation/pediatrics_postoperative_icu_screen.dart';
-import 'screens/summary_consult_screen.dart';
+import 'firebase_options.dart';
 import 'screens/summary_registeration_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // initialize firebase project
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   // inject patient info controller (GetX)
   // todo : test getx controller
   // patient state
-      Get.put(PatientStateController());
+  Get.put(PatientStateController());
   // physicient state
-      Get.put(PhysicientStateController());
+  Get.put(PhysicientStateController());
+  // patient register state
+  Get.put(PatientRegisterStateController());
 
   // runApp(DevicePreview(
   //   enabled: false,
@@ -62,10 +54,14 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: //PediatricsConsultScreen(title: 'MED'),
-      //const PediatricsEvaluationScreen(),
-      //CardioVascularScreen(),
-      //MajorOperationScreen(),
-      const PatientInformationScreen(),
+          //const PediatricsEvaluationScreen(),
+          //CardioVascularScreen(),
+          //MajorOperationScreen(),
+          //RegistrationScreen(),
+          const SummaryRegisterationScreen(),
+         // const WriteDataOnFirebase(),
+      //FormsTabView(),
+      //const PatientInformationScreen(),
       //const PediatricsPostOperativeICUScreen(),
       //const PediatricsOnedaySurgeryCaseScreen(),
       //ConsultScreen(title: 'TEST', labs: List.generate(20, (index) => 'Name ${index + 1}'),),

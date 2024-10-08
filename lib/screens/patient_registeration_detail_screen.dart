@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:preoperative_patient_assessment/controllers/patient_information_controller.dart';
+import 'package:preoperative_patient_assessment/controllers/app_state_controller.dart';
 import 'package:preoperative_patient_assessment/screens/tabs/forms_tab_view.dart';
 import 'package:preoperative_patient_assessment/screens/tabs/patient_tab_view.dart';
 
@@ -17,9 +17,7 @@ class PatientRegisterationSceen extends StatefulWidget {
 }
 
 class _PatientRegisterationSceenState extends State<PatientRegisterationSceen> {
-  PatientInformationController controller =
-      Get.find<PatientInformationController>();
-
+  var patientsController = Get.find<PatientRegisterStateController>();
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -52,32 +50,11 @@ class _PatientRegisterationSceenState extends State<PatientRegisterationSceen> {
               child: TabBarView(
                 children: [
                   PatientTabView(
-                    patientInformation: controller
-                        .patientSurgeryInfos[widget.index].patientInfo!,
+                    patientInfo: patientsController.state[widget.index],
                   ),
-                  if (controller.patientSurgeryInfos[widget.index]
-                          .labInvestigatings.isEmpty &&
-                      controller.patientSurgeryInfos[widget.index]
-                          .criteriaForPreOperativeConsultation.isEmpty)
-                    Center(
-                      child: Text(
-                        'No form information',
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor),
-                      ),
-                    )
-                  else
-                    FormsTabView(
-                      patientAge: controller
-                          .patientSurgeryInfos[widget.index].patientInfo!.age,
-                      labInvestigations: controller
-                          .patientSurgeryInfos[widget.index].labInvestigatings,
-                      criteriaForPreOperativeConsultations: controller
-                          .patientSurgeryInfos[widget.index]
-                          .criteriaForPreOperativeConsultation,
-                    ),
+                  FormsTabView(
+                    patient: patientsController.state[widget.index],
+                  ),
                 ],
               ),
             )

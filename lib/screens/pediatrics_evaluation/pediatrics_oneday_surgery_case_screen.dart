@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:preoperative_patient_assessment/controllers/app_state_controller.dart';
-import 'package:preoperative_patient_assessment/screens/consult_screen.dart/pediatrics_consult_screen.dart';
-
-import '../../models/check_list_data_model.dart';
+import 'package:preoperative_patient_assessment/screens/consult_screen/consult_screen.dart';
+import 'package:preoperative_patient_assessment/screens/widgets/next_button.dart';
 import '../../widgets/card_selection_widget.dart';
-import 'pediatrics_evaluation_screen.dart';
+
 
 class PediatricsOnedaySurgeryCaseScreen extends StatefulWidget {
   const PediatricsOnedaySurgeryCaseScreen({super.key});
@@ -19,6 +18,7 @@ class _PediatricsOnedaySurgeryCaseScreenState
     extends State<PediatricsOnedaySurgeryCaseScreen> {
   bool? answer;
   var pediatricsEvalController = Get.find<PedEvalStateController>();
+  var patientStateController = Get.find<PatientStateController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,18 +79,37 @@ class _PediatricsOnedaySurgeryCaseScreenState
             NextButton(
               onPressed: () {
                 if (answer ?? false) {
+                  // set answer state
+                  pediatricsEvalController.setOnedaySurgery(true);
                   // YES, Test No. 8 [OK]
                   String consult = "SPAC";
                   pediatricsEvalController.setConsult(consult);
+                  // update patient state
+                  patientStateController
+                      .setPediatricsEval(pediatricsEvalController.state!);
                   Get.to(() => ConsultScreen(title: consult));
                 } else {
+                  // set answer state
+                  pediatricsEvalController.setOnedaySurgery(false);
                   // No, Test No. 9 [OK]
-                  String consult = "No further consultation";
-                  pediatricsEvalController.setConsult(consult);
-                  Get.to(() => ConsultScreen(
-                        title: consult,
-                        fontSize: 26,
-                      ));
+                  late String consult;
+                  if (pediatricsEvalController.state!.other[1].check == false) {
+                    consult = "No further consultation";
+                    pediatricsEvalController.setConsult(consult);
+                  } else {
+                    // No. Test No. 9.1 [OK]
+                    consult = "SPAC";
+                    pediatricsEvalController.setConsult(consult);
+                  }
+                  // update patient state
+                  patientStateController
+                      .setPediatricsEval(pediatricsEvalController.state!);
+                  Get.to(
+                    () => ConsultScreen(
+                      title: consult,
+                      fontSize: 26,
+                    ),
+                  );
                 }
               },
             )

@@ -2,43 +2,79 @@ import '../../models/check_list_data_model.dart';
 
 class PediatricsCondition {
   // CVS
-  static List<CheckListDataModel> cvsCondition = [
-    CheckListDataModel(title: 'Cyanotic heart disease'),
-    CheckListDataModel(title: 'Symptomatic heart failure'),
-    CheckListDataModel(title: 'New cardiac abnormalities'),
-    CheckListDataModel(title: 'Post cardiac surgery'),
-  ];
+  List<CheckListDataModel> get cvsCondition {
+    return [
+      'Cyanotic heart disease',
+      'Symptomatic heart failure',
+      'New cardiac abnormalities',
+      'Post cardiac surgery',
+    ]
+        .map(
+          (e) => CheckListDataModel(title: e),
+        )
+        .toList();
+  }
 
   // RS
-  static List<CheckListDataModel> rsCondition = [
-    CheckListDataModel(title: 'History of BPD or severe chronic Lung disease'),
-    CheckListDataModel(title: 'Asthma exacerbation within 3 months')
-  ];
+  List<CheckListDataModel> get rsCondition {
+    return [
+      'History of BPD or severe chronic Lung disease',
+      'Asthma exacerbation within 3 months',
+    ]
+        .map(
+          (e) => CheckListDataModel(title: e),
+        )
+        .toList();
+  }
 
   // CNS
-  static List<CheckListDataModel> cnsCondition = [
-    CheckListDataModel(
-        title: 'Uncontrolled epilepsy (Last seizure within 1 year)'),
-    CheckListDataModel(title: 'Craniopharyngioma'),
-  ];
+  List<CheckListDataModel> get cnsCondition {
+    return [
+      'Uncontrolled epilepsy (Last seizure within 1 year)',
+      'Craniopharyngioma',
+    ]
+        .map(
+          (e) => CheckListDataModel(title: e),
+        )
+        .toList();
+  }
+
   // Endocrine (Uncontrolled conditions)
-  static List<CheckListDataModel> endocrineCondition = [
-    CheckListDataModel(title: 'DM'),
-    CheckListDataModel(title: 'DI'),
-    CheckListDataModel(title: 'Hyperthyriod'),
-    CheckListDataModel(title: 'Adrenal insufficientcy'),
-  ];
+  List<CheckListDataModel> get endocrineCondition {
+    return [
+      'DM',
+      'DI',
+      'Hyperthyriod',
+      'Adrenal insufficientcy',
+    ]
+        .map(
+          (e) => CheckListDataModel(title: e),
+        )
+        .toList();
+  }
+
   // Hemato
-  static List<CheckListDataModel> hematoCondition = [
-    CheckListDataModel(title: 'Hematologic disorder'),
-    CheckListDataModel(title: 'Bleeding disorder'),
-    CheckListDataModel(
-        title:
-            'Abnomal CBC (Hb < 10 g/dL, Wbc < 3000, ANC < 1500, Plt < 100000)'),
-  ];
+  List<CheckListDataModel> get hematoCondition {
+    return [
+      'Hematologic disorder',
+      'Bleeding disorder',
+      'Abnomal CBC (Hb < 10 g/dL, Wbc < 3000, ANC < 1500, Plt < 100000)',
+    ]
+        .map(
+          (e) => CheckListDataModel(title: e),
+        )
+        .toList();
+  }
+
   // Other
-  static List<CheckListDataModel> otherCondition = [
-    CheckListDataModel(title: 'Pediatric morbid obesity'),
-    CheckListDataModel(title: 'อื่นๆ โปรดระบุ'),
-  ];
+  List<CheckListDataModel> get otherCondition {
+    return [
+      'Pediatric morbid obesity',
+      'อื่นๆ โปรดระบุ',
+    ]
+        .map(
+          (e) => CheckListDataModel(title: e),
+        )
+        .toList();
+  }
 }

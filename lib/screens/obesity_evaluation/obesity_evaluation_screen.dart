@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:preoperative_patient_assessment/screens/widgets/condition_card.dart';
+import 'package:preoperative_patient_assessment/screens/widgets/next_button.dart';
 
 import 'package:preoperative_patient_assessment/utilities/common_function.dart';
 import 'package:preoperative_patient_assessment/utilities/result_estimate_model.dart';
@@ -7,11 +9,10 @@ import 'package:preoperative_patient_assessment/utilities/result_estimate_model.
 import '../../controllers/app_state_controller.dart';
 import '../../models/check_list_data_model.dart';
 import '../../widgets/card_selection_widget.dart';
-import '../consult_screen.dart/pediatrics_consult_screen.dart';
-import '../pediatrics_evaluation/pediatrics_evaluation_screen.dart';
+import '../consult_screen/consult_screen.dart';
 import '/screens/obesity_evaluation/constant_condition.dart';
-import 'obesity_evaluation_model.dart';
-import 'obesity_evaluation_state.dart';
+import '../../models/obesity_evaluation_model.dart';
+import '../../controllers/obesity_evaluation_state.dart';
 
 class ObesityEvaluationScreen extends StatefulWidget {
   const ObesityEvaluationScreen({super.key});
@@ -23,7 +24,7 @@ class ObesityEvaluationScreen extends StatefulWidget {
 
 class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
   // patient information
-  var patientInfomationController = Get.find<PatientStateController>();
+  var patientStateController = Get.find<PatientStateController>();
 
   // seletedState
   List<String> selectedState = [];
@@ -35,13 +36,13 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
 
   // Cardiovascular system
   var cardiovascularSystemController =
-      Get.put(CardiovascularSystemController());
+      Get.put(ObesityCardiovascularSystemController());
 
   // Respiratory system
-  var respiratorySystemController = Get.put(RespiratorySystemController());
+  var respiratorySystemController = Get.put(ObesityRespiratorySystemController());
 
   // Other abnormal conditions
-  var otherAbnormalController = Get.put(OtherAbnormalConditionController());
+  var otherAbnormalController = Get.put(ObesityOtherAbnormalConditionController());
   // STOP BANG score
   var stopBangScoreController = Get.put(StopBANGScoreController());
 
@@ -50,10 +51,10 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
     super.initState();
 
     // auto check in STOP BANG Condition
-    if (patientInfomationController.state!.bMI > 35) {
+    if (patientStateController.state!.bMI > 35) {
       stopBangScoreController.state[4].check = true;
     }
-    if (patientInfomationController.state!.age > 50) {
+    if (patientStateController.state!.age > 50) {
       stopBangScoreController.state[5].check = true;
     }
   }
@@ -83,7 +84,7 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
                 const SizedBox(
                   height: 12,
                 ),
-                GetBuilder<CardiovascularSystemController>(
+                GetBuilder<ObesityCardiovascularSystemController>(
                   init: cardiovascularSystemController,
                   builder: (controller) => ConditionCard(
                     title: 'Cardiovascular System',
@@ -95,11 +96,6 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
                               onChanged: (value) {
                                 controller.change(e.title, value);
                                 updateSelectedState(value!, e.title);
-                                // setState(() {
-                                //   e.check = value!;
-                                //   // update selected state
-                                //   updateSelectedState(value, e.title);
-                                // });
                               }),
                         )
                         .toList(),
@@ -108,7 +104,7 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
                 const SizedBox(
                   height: 12,
                 ),
-                GetBuilder<RespiratorySystemController>(
+                GetBuilder<ObesityRespiratorySystemController>(
                   init: respiratorySystemController,
                   builder: (controller) => ConditionCard(
                     title: 'Respiratory System',
@@ -120,11 +116,6 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
                               onChanged: (value) {
                                 controller.change(e.title, value);
                                 updateSelectedState(value!, e.title);
-                                // setState(() {
-                                //   e.check = value!;
-                                //   // update selected state
-                                //   updateSelectedState(value, e.title);
-                                // });
                               }),
                         )
                         .toList(),
@@ -141,11 +132,6 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
                                     title: e.title,
                                     onChanged: (value) {
                                       stopBANGcontroller.change(e.title, value);
-                                      // setState(() {
-                                      //   e.check = value!;
-                                      //   // update score
-                                      //   riskOSAUpdate();
-                                      // });
                                     }),
                               )
                               .toList(),
@@ -179,7 +165,7 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
                 const SizedBox(
                   height: 12,
                 ),
-                GetBuilder<OtherAbnormalConditionController>(
+                GetBuilder<ObesityOtherAbnormalConditionController>(
                   init: otherAbnormalController,
                   builder: (controller) => ConditionCard(
                     title: 'Other abnormal conditions',
@@ -191,11 +177,6 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
                               onChanged: (value) {
                                 controller.change(e.title, value);
                                 updateSelectedState(value!, e.title);
-                                // setState(() {
-                                //   e.check = value!;
-                                //   // update selected state
-                                //   updateSelectedState(value, e.title);
-                                // });
                               }),
                         )
                         .toList(),
@@ -209,10 +190,16 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
                     ResultEst result = estimation();
                     // Test No. 40 [OK]
                     updateEvaluationState(result);
-                    Get.to(() => ConsultScreen(
-                          title: result.consult,
-                          labs: result.labs,
-                        ));
+
+                    // set patient state
+                    patientStateController
+                        .setObesityEval(obisityEvaluationController.state!);
+                    Get.to(
+                      () => ConsultScreen(
+                        title: result.consult,
+                        labs: result.labs,
+                      ),
+                    );
                   },
                 ),
               ],
@@ -235,10 +222,10 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
   updateEvaluationState(ResultEst result) {
     obisityEvaluationController.setState(
       ObesityEvaluation(
-        cardiovascularSystem: cardiovascularSystemController.state,
-        respiratorySystem: respiratorySystemController.state,
-        stopBANGCondition: stopBangScoreController.state,
-        otherAbnormalConditions: otherAbnormalController.state,
+        cardiovascularSystem: cardiovascularSystemController.copy(),
+        respiratorySystem: respiratorySystemController.copy(),
+        stopBANGCondition: stopBangScoreController.copy(),
+        otherAbnormalConditions: otherAbnormalController.copy(),
         consult: result.consult,
         labs: result.labs,
       ),
@@ -256,9 +243,9 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
     // BMI > 50 : Test No. 32 [OK]
     // Age > 50 and BMI >= 40 : Test No. 33 [OK]
     // STOP BANG score >= 5 : Test No. 34 [OK]
-    if (patientInfomationController.state!.bMI > 50 ||
-        (patientInfomationController.state!.age > 50 &&
-            patientInfomationController.state!.bMI >= 40) ||
+    if (patientStateController.state!.bMI > 50 ||
+        (patientStateController.state!.age > 50 &&
+            patientStateController.state!.bMI >= 40) ||
         stopBangScoreController.score >= 5) {
       // consult MED
       consult = 'MED';

@@ -2,18 +2,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:preoperative_patient_assessment/controllers/app_state_controller.dart';
-import 'package:preoperative_patient_assessment/screens/adult_evaluation/adult_evaluation_model.dart';
-import 'package:preoperative_patient_assessment/screens/adult_evaluation/adult_evaluation_state.dart';
+import 'package:preoperative_patient_assessment/models/adult_evaluation_model.dart';
+import 'package:preoperative_patient_assessment/controllers/adult_evaluation_state.dart';
 import 'package:preoperative_patient_assessment/screens/adult_evaluation/constant_condition.dart';
-import 'package:preoperative_patient_assessment/screens/consult_screen.dart/pediatrics_consult_screen.dart';
-
-import 'package:preoperative_patient_assessment/screens/hematologic_screen.dart';
+import 'package:preoperative_patient_assessment/screens/consult_screen/consult_screen.dart';
+import 'package:preoperative_patient_assessment/screens/widgets/condition_card.dart';
+import 'package:preoperative_patient_assessment/screens/widgets/next_button.dart';
 import 'package:preoperative_patient_assessment/utilities/common_function.dart';
-
-import '../../models/check_list_data_model.dart';
 import '../../utilities/result_estimate_model.dart';
 import '../../widgets/card_selection_widget.dart';
-import '../pediatrics_evaluation/pediatrics_evaluation_screen.dart';
 
 class AdultEvaluationScreen extends StatefulWidget {
   const AdultEvaluationScreen({super.key});
@@ -33,46 +30,29 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
   var adultEvaluationController = Get.put(AdultEvalStateController());
 
   // Cardiovascular system
-  // List<CheckListDataModel> cardiovascularSystemCondition =
-  //     AdultCondition.cardiovascularSystemCondition;
   var cardiovascularSystemController =
       Get.put(CardiovascularSystemController());
   // Respiratory system
-  // List<CheckListDataModel> respiratorySystemCondition =
-  //     AdultCondition.respiratorySystemCondition;
   var respiratorySystemController = Get.put(RespiratorySystemController());
   // Neurologic system
-  // List<CheckListDataModel> neurologicSystemCondition =
-  //     AdultCondition.neurologicSystemCondition;
   var neurologicSystemController = Get.put(NeurologicSystemController());
   // Renal system
-  // List<CheckListDataModel> renalSystemCondition =
-  //     AdultCondition.renalSystemCondition;
   var renalSystemController = Get.put(RenalSystemController());
   // Endocrine system
-  // List<CheckListDataModel> endocrineSystemCondition =
-  //     AdultCondition.endocrineSystemCondition;
   var endocrineSystemController = Get.put(EndocrineSystemController());
   // Hematologic system
-  // List<CheckListDataModel> hemotologicSystemCondition =
-  //     AdultCondition.hemotologicSystemCondition;
   var hemotologicSystemController = Get.put(HematologicSystemController());
   // Hepatobility system
-  // List<CheckListDataModel> hepatobilitySystemCondition =
-  //     AdultCondition.hepatobilitySystemCondition;
   var hepatobilitySystemController = Get.put(HepatobiliaryController());
   // Other system
-  List<CheckListDataModel> otherSystemCondition =
-      AdultCondition.otherSystemCondition;
-  var otherSystemController = Get.put(OtherSystemController());
+  var othersSystemController = Get.put(OtherSystemController());
   // Medication
-  // List<CheckListDataModel> medicationCondition =
-  //     AdultCondition.medicationCondition;
   var medicationController = Get.put(MedicationController());
 
   // High risk procedure
-  // bool? highRiskProcedure;
   var highRiskProcedureController = Get.put(HighriskProcedureController());
+  // One-day surgery
+  var oneDaySurgeryController = Get.put(OneDaySurgeryController());
 
   @override
   Widget build(BuildContext context) {
@@ -111,11 +91,6 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
                               onChanged: (value) {
                                 controller.change(e.title, value);
                                 updateSelectedState(value!, e.title);
-                                // setState(() {
-                                //   e.check = value!;
-                                //   // update selected state
-                                //   updateSelectedState(value, e.title);
-                                // });
                               }),
                         )
                         .toList(),
@@ -136,11 +111,6 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
                               onChanged: (value) {
                                 controller.change(e.title, value);
                                 updateSelectedState(value!, e.title);
-                                // setState(() {
-                                //   e.check = value!;
-                                //   // update selected state
-                                //   updateSelectedState(value, e.title);
-                                // });
                               }),
                         )
                         .toList(),
@@ -161,11 +131,6 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
                               onChanged: (value) {
                                 controller.change(e.title, value);
                                 updateSelectedState(value!, e.title);
-                                // setState(() {
-                                //   e.check = value!;
-                                //   // update selected state
-                                //   updateSelectedState(value, e.title);
-                                // });
                               }),
                         )
                         .toList(),
@@ -186,11 +151,6 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
                             onChanged: (value) {
                               controller.change(e.title, value);
                               updateSelectedState(value!, e.title);
-                              // setState(() {
-                              //   e.check = value!;
-                              //   // update selected state
-                              //   updateSelectedState(value, e.title);
-                              // });
                             },
                           ),
                         )
@@ -212,11 +172,6 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
                               onChanged: (value) {
                                 controller.change(e.title, value);
                                 updateSelectedState(value!, e.title);
-                                // setState(() {
-                                //   e.check = value!;
-                                //   // update selected state
-                                //   updateSelectedState(value, e.title);
-                                // });
                               }),
                         )
                         .toList(),
@@ -237,13 +192,6 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
                               onChanged: (value) {
                                 controller.change(e.title, value);
                                 updateSelectedState(value!, e.title);
-                                // setState(() {
-                                //   setState(() {
-                                //     e.check = value!;
-                                //     // update selected state
-                                //     updateSelectedState(value, e.title);
-                                //   });
-                                // });
                               }),
                         )
                         .toList(),
@@ -264,11 +212,6 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
                               onChanged: (value) {
                                 controller.change(e.title, value);
                                 updateSelectedState(value!, e.title);
-                                // setState(() {
-                                //   e.check = value!;
-                                //   // update selected state
-                                //   updateSelectedState(value, e.title);
-                                // });
                               }),
                         )
                         .toList(),
@@ -278,7 +221,7 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
                   height: 12,
                 ),
                 GetBuilder<OtherSystemController>(
-                  init: otherSystemController,
+                  init: othersSystemController,
                   builder: (controller) => ConditionCard(
                     title: 'Other System',
                     conditions: controller.state
@@ -289,11 +232,6 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
                               onChanged: (value) {
                                 controller.change(e.title, value);
                                 updateSelectedState(value!, e.title);
-                                // setState(() {
-                                //   e.check = value!;
-                                //   // update selected state
-                                //   updateSelectedState(value, e.title);
-                                // });
                               }),
                         )
                         .toList(),
@@ -314,11 +252,6 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
                               onChanged: (value) {
                                 controller.change(e.title, value);
                                 updateSelectedState(value!, e.title);
-                                // setState(() {
-                                //   e.check = value!;
-                                //   // update selected state
-                                //   updateSelectedState(value, e.title);
-                                // });
                               }),
                         )
                         .toList(),
@@ -353,17 +286,46 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
                 const SizedBox(
                   height: 12,
                 ),
+                GetBuilder<OneDaySurgeryController>(
+                  init: oneDaySurgeryController,
+                  builder: (controller) => ConditionCard(
+                    title: 'One day surgery',
+                    conditions: [
+                      CardSelectionWidget(
+                          value: controller.state ?? false,
+                          title: "Yes",
+                          onChanged: (_) {
+                            controller.set(true);
+                          }),
+                      CardSelectionWidget(
+                          value: controller.state == null
+                              ? false
+                              : !controller.state!,
+                          title: "No",
+                          onChanged: (_) {
+                            controller.set(false);
+                          }),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
                 NextButton(
                   onPressed: () {
                     var result = evaluation();
                     // update evaluation state
                     updateEvaluationState(result);
+                    // set evaluation state
+                    patientStateController
+                        .setAdultEval(adultEvaluationController.state!);
                     Get.to(
                       () => ConsultScreen(
                         title: result.consult,
                         labs: result.labs,
                       ),
                     );
+
                   },
                 ),
               ],
@@ -397,16 +359,17 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
     // Test No. 31
     adultEvaluationController.setState(
       AdultEvaluation(
-        cardiovascularSyatem: cardiovascularSystemController.state,
-        respiratorySystem: respiratorySystemController.state,
-        neurologicSystem: neurologicSystemController.state,
-        renalSystem: renalSystemController.state,
-        endocrineSystem: endocrineSystemController.state,
-        hematologicSystem: hemotologicSystemController.state,
-        hepatobiliarySystem: hepatobilitySystemController.state,
-        otherSystem: otherSystemController.state,
-        medication: medicationController.state,
-        highriskProcedure: highRiskProcedureController.state ?? false,
+        cardiovascularSystem: cardiovascularSystemController.copy(),
+        respiratorySystem: respiratorySystemController.copy(),
+        neurologicSystem: neurologicSystemController.copy(),
+        renalSystem: renalSystemController.copy(),
+        endocrineSystem: endocrineSystemController.copy(),
+        hematologicSystem: hemotologicSystemController.copy(),
+        hepatobiliarySystem: hepatobilitySystemController.copy(),
+        othersSystem: othersSystemController.copy(),
+        medication: medicationController.copy(),
+        highriskProcedure: highRiskProcedureController.copy(),
+        onedaySurgery: oneDaySurgeryController.copy(),
         consult: result.consult,
         labs: result.labs,
       ),
@@ -419,8 +382,14 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
 
     // consult estimate
     if (selectedState.isEmpty) {
-      // Test No. 13 [OK]
-      consult = 'No further consultation';
+      if (highRiskProcedureController.getState == true ||
+          oneDaySurgeryController.getState == true) {
+        // Test No. 13.1 [OK]
+        consult = 'SPAC';
+      } else {
+        // Test No. 13 [OK]
+        consult = 'No further consultation';
+      }
     } else {
       if (selectedState.any(
         (element) => starState.contains(element),

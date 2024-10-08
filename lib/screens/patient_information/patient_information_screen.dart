@@ -4,12 +4,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:preoperative_patient_assessment/constant.dart';
 import 'package:preoperative_patient_assessment/controllers/app_state_controller.dart';
-import 'package:preoperative_patient_assessment/controllers/patient_information_controller.dart';
 import 'package:preoperative_patient_assessment/models/patient_information_model.dart';
-import 'package:preoperative_patient_assessment/models/patient_sugery_infomation.dart';
 import 'package:preoperative_patient_assessment/screens/pediatrics_evaluation/pediatrics_evaluation_screen.dart';
-import 'package:preoperative_patient_assessment/screens/registry_information_screen.dart';
-
 import '../../models/physician_information_model.dart';
 import '../adult_evaluation/adult_evaluation_screen.dart';
 import '../obesity_evaluation/obesity_evaluation_screen.dart';
@@ -20,7 +16,12 @@ import 'bodyweightfield_widget.dart';
 import 'gender_widget.dart';
 
 class PatientInformationScreen extends StatefulWidget {
-  const PatientInformationScreen({super.key});
+  const PatientInformationScreen({
+    super.key,
+    this.isEdit,
+  });
+
+  final bool? isEdit;
 
   @override
   State<PatientInformationScreen> createState() =>
@@ -81,17 +82,35 @@ class _PatientInformationScreenState extends State<PatientInformationScreen> {
       physicianPhoneNumberController.text =
           physicientStateController.state!.phoneNumber;
     }
-    // todo : test
-    ageController.text = "${15}";
-    bodyweightController.text = "${0.0031}";
-    heightController.text = "${1}";
-    bmiController.text = "${bmiCal(0.0031, 1)}";
-    diagnosisController.text = "diag test";
-    operationController.text = "operation test";
+    // // todo : test
+    // ageController.text = "${14}";
+    // bodyweightController.text = "${0.0031}";
+    // heightController.text = "${1}";
+    // bmiController.text = "${bmiCal(0.0031, 1)}";
+    // diagnosisController.text = "diag test";
+    // operationController.text = "operation test";
 
-    physicianNameController.text = "phy test";
-    physicianDepartment = departments[0];
-    physicianPhoneNumberController.text = "00000";
+    // physicianNameController.text = "phy test";
+    // physicianDepartment = departments[0];
+    // physicianPhoneNumberController.text = "00000";
+
+    // editing
+    if (widget.isEdit ?? false) {
+      selectedGender = patientStateController.gender!;
+      ageController.text = patientStateController.age.toString();
+      bodyweightController.text = patientStateController.bodyWeight.toString();
+      heightController.text = patientStateController.height.toString();
+      bmiController.text = patientStateController.bMI.toString();
+      diagnosisController.text = patientStateController.diagnosis ?? "";
+      operationController.text = patientStateController.operation ?? "";
+      dateOperationController.text = DateFormat(dateformat)
+          .format(patientStateController.dateOfOperation!);
+      // physician
+      physicianNameController.text = patientStateController.physician!.name;
+      physicianDepartment = patientStateController.physician!.department;
+      physicianPhoneNumberController.text =
+          patientStateController.physician!.phoneNumber;
+    }
   }
 
   String? checkErrorText({required String text, bool? checkNumber}) {
@@ -394,7 +413,11 @@ class _PatientInformationScreenState extends State<PatientInformationScreen> {
   onNext() {
     if (validate()) {
       // update patient and physicient information
-      updateState();
+      if (widget.isEdit ?? false) {
+        updateState();
+      } else {
+        setNewState();
+      }
 
       // selecte proper evaluation page
       selectEvaluationPage();
@@ -402,6 +425,24 @@ class _PatientInformationScreenState extends State<PatientInformationScreen> {
   }
 
   updateState() {
+    patientStateController.state!.copyWith(
+      gender: selectedGender,
+      age: int.parse(ageController.text),
+      bodyWeight: double.parse(bodyweightController.text),
+      height: double.parse(heightController.text),
+      bMI: double.parse(bmiController.text),
+      diagnosis: diagnosisController.text,
+      operation: operationController.text,
+      dateOfOperation:
+          DateFormat(dateformat).parse(dateOperationController.text),
+      physician: Physician(
+          name: physicianNameController.text,
+          department: physicianDepartment!,
+          phoneNumber: physicianPhoneNumberController.text),
+    );
+  }
+
+  setNewState() {
     // patient state
     patientStateController.setState(
       Patient(
@@ -414,6 +455,10 @@ class _PatientInformationScreenState extends State<PatientInformationScreen> {
         operation: operationController.text,
         dateOfOperation:
             DateFormat(dateformat).parse(dateOperationController.text),
+        physician: Physician(
+            name: physicianNameController.text,
+            department: physicianDepartment!,
+            phoneNumber: physicianPhoneNumberController.text),
       ),
     );
     // physicient state
@@ -426,15 +471,17 @@ class _PatientInformationScreenState extends State<PatientInformationScreen> {
   }
 
   selectEvaluationPage() {
-    int age = int.parse(ageController.text);
-    double bMI = double.parse(bmiController.text);
-    if (age < 15) {
+    // int age = int.parse(ageController.text);
+    // double bMI = double.parse(bmiController.text);
+    if (patientStateController.state!.formType == FormType.pediatrics) {
       // Pediatrics : Test No. 1 [OK]
-      Get.to(() => const PediatricsEvaluationScreen());
-    } else if (age >= 15 && bMI < 30) {
+      Get.to(() => PediatricsEvaluationScreen(
+            isEdit: widget.isEdit,
+          ));
+    } else if (patientStateController.state!.formType == FormType.adult) {
       // Adult : Test No. 2 [OK]
       Get.to(() => const AdultEvaluationScreen());
-    } else if (age >= 15 && bMI >= 30) {
+    } else if (patientStateController.state!.formType == FormType.obesity) {
       // Obesity : Test No. 3 [OK]
       Get.to(() => const ObesityEvaluationScreen());
     }

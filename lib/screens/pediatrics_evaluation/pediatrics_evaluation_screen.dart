@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:preoperative_patient_assessment/controllers/app_state_controller.dart';
-import 'package:preoperative_patient_assessment/screens/pediatrics_evaluation/constant_condition.dart';
-import 'package:preoperative_patient_assessment/screens/pediatrics_evaluation/pediatric_evaluation_state.dart';
+import 'package:preoperative_patient_assessment/controllers/pediatric_evaluation_state.dart';
 import 'package:preoperative_patient_assessment/screens/pediatrics_evaluation/pediatrics_postoperative_icu_screen.dart';
+import 'package:preoperative_patient_assessment/screens/widgets/condition_card.dart';
+import 'package:preoperative_patient_assessment/screens/widgets/next_button.dart';
 
-import '../../models/check_list_data_model.dart';
 import '../../widgets/card_selection_widget.dart';
-import 'pediatrics_evaluation_model.dart';
+import '../../models/pediatrics_evaluation_model.dart';
 
 class PediatricsEvaluationScreen extends StatefulWidget {
-  const PediatricsEvaluationScreen({super.key});
+  const PediatricsEvaluationScreen({super.key, this.isEdit});
 
+  final bool? isEdit;
   @override
   State<PediatricsEvaluationScreen> createState() =>
       _PediatricsEvaluationScreenState();
@@ -43,6 +44,33 @@ class _PediatricsEvaluationScreenState
     // Test No. 4, 5 [OK, OK]
     otherConditionController.state[0].check =
         patientStateController.state!.bMI >= 30.0;
+
+    if (widget.isEdit ?? false) {
+      // update evaluating condition
+      // CVS condition
+      cvsConditionController
+          .setState(patientStateController.pediatricsEvaluation!.cvs);
+      // RS condition
+      rsConditionController
+          .setState(patientStateController.pediatricsEvaluation!.rs);
+      // CNS condition
+      cnsConditionController
+          .setState(patientStateController.pediatricsEvaluation!.cns);
+      // endocrine condition
+      endocrineConditionController
+          .setState(patientStateController.pediatricsEvaluation!.endocrine);
+      // hemato condition
+      hematoConditionController
+          .setState(patientStateController.pediatricsEvaluation!.hemato);
+      // other condition
+      otherConditionController
+          .setState(patientStateController.pediatricsEvaluation!.other);
+      // commment
+      if (patientStateController.pediatricsEvaluation!.comment != null) {
+        otherCommentController.text =
+            patientStateController.pediatricsEvaluation!.comment!;
+      }
+    }
   }
 
   @override
@@ -180,7 +208,7 @@ class _PediatricsEvaluationScreenState
                             title: e.title,
                             onChanged: (value) {
                               controller.change(e.title, value);
-                              
+
                               // clear other comment text
                               int index = controller.state.indexOf(e);
                               if (index == 1 && value == false) {
@@ -213,7 +241,6 @@ class _PediatricsEvaluationScreenState
                   onPressed: () {
                     // update pediatrics evaluation state
                     updateEvaluationState();
-
                     // Go to Post Operative ICU : [OK]
                     Get.to(() => const PediatricsPostOperativeICUScreen());
                   },
@@ -226,116 +253,27 @@ class _PediatricsEvaluationScreenState
     );
   }
 
+  cleanState() {
+    // Get.delete<CVSConditionController>(); // on close working
+    // Get.delete<RSCondictionController>();
+    // Get.delete<CNSConditionController>();
+    // Get.delete<EndocrineConditionController>();
+    // Get.delete<HematoConditionController>();
+    // Get.delete<OtherConditionController>();
+  }
+
   updateEvaluationState() {
     // Test No. 10 [OK]
     pediatricsEvaluationController.setState(
       PediatricsEvaluation(
-        cvs: cvsConditionController.state,
-        rs: rsConditionController.state,
-        cns: cnsConditionController.state,
-        endocrine: endocrineConditionController.state,
-        hemato: hematoConditionController.state,
-        other: otherConditionController.state,
+        cvs: cvsConditionController.copy(),
+        rs: rsConditionController.copy(),
+        cns: cnsConditionController.copy(),
+        endocrine: endocrineConditionController.copy(),
+        hemato: hematoConditionController.copy(),
+        other: otherConditionController.copy(),
         comment: otherCommentController.text,
       ),
-    );
-  }
-}
-
-class NextButton extends StatelessWidget {
-  const NextButton({
-    super.key,
-    this.onPressed,
-  });
-
-  final void Function()? onPressed;
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 50,
-      width: MediaQuery.of(context).size.width,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          backgroundColor: Theme.of(context).primaryColor,
-          foregroundColor: Colors.white,
-        ),
-        onPressed: onPressed,
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.keyboard_arrow_right),
-            Text(
-              'Next',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ConditionCard extends StatelessWidget {
-  const ConditionCard({
-    super.key,
-    required this.title,
-    required this.conditions,
-    this.child,
-  });
-  final String title;
-  final List<CardSelectionWidget> conditions;
-  final Widget? child;
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12), topRight: Radius.circular(12))),
-          padding: const EdgeInsets.only(left: 8),
-          alignment: Alignment.centerLeft,
-          width: double.maxFinite,
-          height: 40,
-          child: Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(12),
-                bottomRight: Radius.circular(12),
-              ),
-              border: Border.all(
-                width: 2.0,
-                color: Theme.of(context).primaryColor,
-              )),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              children: [
-                Column(
-                  children: conditions,
-                ),
-                child ?? Container(),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

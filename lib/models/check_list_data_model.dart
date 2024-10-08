@@ -9,4 +9,14 @@ class CheckListDataModel {
 
   @override
   String toString() => 'CheckListDataModel(title: $title, check: $check)';
+
+  CheckListDataModel copyWith({
+    String? title,
+    bool? check,
+  }) {
+    return CheckListDataModel(
+      title: title ?? this.title,
+      check: check ?? this.check,
+    );
+  }
 }

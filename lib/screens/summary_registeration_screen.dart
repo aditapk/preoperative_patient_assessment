@@ -1,9 +1,11 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../constant.dart';
-import '../controllers/patient_information_controller.dart';
+import '../controllers/app_state_controller.dart';
 import '../models/patient_information_model.dart';
 import 'patient_information/patient_information_screen.dart';
 import 'patient_registeration_detail_screen.dart';
@@ -18,8 +20,9 @@ class SummaryRegisterationScreen extends StatefulWidget {
 
 class _SummaryRegisterationScreenState
     extends State<SummaryRegisterationScreen> {
-  PatientInformationController patientInformationController =
-      Get.find<PatientInformationController>();
+  var patients = Get.find<PatientRegisterStateController>();
+  var patient = Get.find<PatientStateController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,9 +32,23 @@ class _SummaryRegisterationScreenState
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                  child: HeaderCard(),
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                  child: GetBuilder<PatientRegisterStateController>(
+                    init: patients,
+                    builder: (controller) => HeaderCard(
+                      total_no: controller.total,
+                      adult_no: controller.adult,
+                      pediatrics_no: controller.pediatrics,
+                      date: DateTime.now(),
+                      onDateChange: () {
+                        // todo : select date to display patient registeration
+                        print(
+                            'todo : select date to display patient registeration');
+                      },
+                    ),
+                  ),
                 ),
                 // Registeration
                 Expanded(
@@ -67,32 +84,46 @@ class _SummaryRegisterationScreenState
                           child: Padding(
                             padding: const EdgeInsets.only(
                                 top: 10, left: 10, right: 10),
-                            child: ListView(
-                              children: patientInformationController
-                                  .patientSurgeryInfos
-                                  .map((e) {
-                                int index = patientInformationController
-                                        .patientSurgeryInfos
-                                        .indexOf(e) +
-                                    1; // display index
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 10),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      int arrayIndex = index - 1;
-                                      Get.to(
-                                        () => PatientRegisterationSceen(
-                                          index: arrayIndex,
+                            child: GetBuilder<PatientRegisterStateController>(
+                              init: patients,
+                              builder: (controller) => ListView(
+                                children: controller.state.map(
+                                  (e) {
+                                    int index = controller.state.indexOf(e);
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: GestureDetector(
+                                        child: RegisterationCard(
+                                          index: index,
+                                          register: e,
                                         ),
-                                      );
-                                    },
-                                    child: RegisterationCard(
-                                      index: index,
-                                      register: e.patientInfo!,
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
+                                        onTap: () {
+                                          Get.to(
+                                            () => PatientRegisterationSceen(
+                                              index: index,
+                                            ),
+                                          );
+                                        },
+                                        onDoubleTap: () {
+                                          // update current patient edit
+                                          patient
+                                              .setState(patients.state[index]);
+                                          patient.setId(patients.ids[index]);
+                                          
+                                          Get.to(
+                                              () =>
+                                                  const PatientInformationScreen(isEdit: true,),
+                                              routeName:
+                                                  'patient-information-screen');
+                                        },
+                                        onLongPress: () {
+                                          print('delete');
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ).toList(),
+                              ),
                             ),
                           ),
                         ),
@@ -120,16 +151,23 @@ class _SummaryRegisterationScreenState
   }
 }
 
-class HeaderCard extends StatefulWidget {
-  const HeaderCard({super.key});
+class HeaderCard extends StatelessWidget {
+  const HeaderCard({
+    super.key,
+    required this.total_no,
+    required this.adult_no,
+    required this.pediatrics_no,
+    required this.date,
+    this.onDateChange,
+  });
 
-  @override
-  State<HeaderCard> createState() => _HeaderCardState();
-}
+  // PatientInformationController patientInformationController =
+  final int total_no;
+  final int adult_no;
+  final int pediatrics_no;
+  final DateTime date;
+  final Function()? onDateChange;
 
-class _HeaderCardState extends State<HeaderCard> {
-  PatientInformationController patientInformationController =
-      Get.find<PatientInformationController>();
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -137,18 +175,21 @@ class _HeaderCardState extends State<HeaderCard> {
       elevation: 5,
       color: Theme.of(context).primaryColor,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Today - ${DateFormat('EEE, MMM d, yyyy').format(DateTime.now())}',
-                style: const TextStyle(
-                    letterSpacing: 1.0,
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
+              GestureDetector(
+                onTap: onDateChange,
+                child: Text(
+                  'Today - ${DateFormat('EEE, MMM d, yyyy').format(date)}',
+                  style: const TextStyle(
+                      letterSpacing: 1.0,
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold),
+                ),
               ),
               const SizedBox(
                 height: 10,
@@ -164,141 +205,36 @@ class _HeaderCardState extends State<HeaderCard> {
                   ),
                 ),
               ),
+              const SizedBox(
+                height: 10,
+              ),
               Row(
                 children: [
                   Expanded(
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Total',
-                          style: TextStyle(
-                              letterSpacing: 1.0,
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold),
+                    child: SizedBox(
+                      height: 110,
+                      child: ToTalCard(
+                        number: total_no,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: SizedBox(
+                      height: 110,
+                      child: Column(children: [
+                        Expanded(
+                          child: AdultCard(
+                            number: adult_no,
+                          ),
                         ),
                         const SizedBox(
                           height: 10,
                         ),
-                        Container(
-                          width: 70,
-                          height: 70,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.rectangle,
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(6)),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${patientInformationController.getTotal()}',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 30,
-                                  color: Theme.of(context).primaryColor
-                                  //Color(0xFF52626F),
-                                  ),
-                            ),
-                          ),
-                        )
-                      ],
+                        PediatricsCard(
+                          number: pediatrics_no,
+                        ),
+                      ]),
                     ),
-                  ),
-                  Expanded(
-                    child: Column(children: [
-                      Row(
-                        children: [
-                          const Expanded(
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.person,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  'Adult',
-                                  style: TextStyle(
-                                      letterSpacing: 1.0,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: const BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(6))),
-                            child: Center(
-                              child: Text(
-                                '${patientInformationController.getAdultNo()}',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                    color: Theme.of(context).primaryColor
-                                    //Color(0xFF52626F),
-                                    ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        children: [
-                          const Expanded(
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.child_care,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  'Pediatrics',
-                                  style: TextStyle(
-                                      letterSpacing: 1.0,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: const BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(6))),
-                            child: Center(
-                              child: Text(
-                                '${patientInformationController.getPediatricNo()}',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                    color: Theme.of(context).primaryColor
-                                    //Color(0xFF52626F),
-                                    ),
-                              ),
-                            ),
-                          )
-                        ],
-                      )
-                    ]),
                   )
                 ],
               )
@@ -308,101 +244,371 @@ class _HeaderCardState extends State<HeaderCard> {
   }
 }
 
+class PediatricsCard extends StatelessWidget {
+  const PediatricsCard({
+    super.key,
+    required this.number,
+  });
+
+  final int number;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const SizedBox(
+          width: 80,
+          child: Column(
+            children: [
+              Icon(
+                Icons.child_care,
+                color: Colors.white,
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                'Pediatrics',
+                style: TextStyle(
+                    letterSpacing: 1.0,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              )
+            ],
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        Container(
+          width: 50,
+          height: 50,
+          decoration: const BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(6))),
+          child: Center(
+            child: Text(
+              '$number',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: Theme.of(context).primaryColor),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class AdultCard extends StatelessWidget {
+  const AdultCard({
+    super.key,
+    required this.number,
+  });
+
+  final int number;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const SizedBox(
+          width: 80,
+          child: Column(
+            children: [
+              Icon(
+                Icons.person,
+                color: Colors.white,
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                'Adult',
+                style: TextStyle(
+                    letterSpacing: 1.0,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              )
+            ],
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        Container(
+          width: 50,
+          height: 50,
+          decoration: const BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(6))),
+          child: Center(
+            child: Text(
+              "$number",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: Theme.of(context).primaryColor
+                  //Color(0xFF52626F),
+                  ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class ToTalCard extends StatelessWidget {
+  const ToTalCard({
+    super.key,
+    required this.number,
+  });
+
+  final int number;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Text(
+          'Total',
+          style: TextStyle(
+              letterSpacing: 1.0,
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Container(
+          width: 70,
+          height: 70,
+          decoration: const BoxDecoration(
+            shape: BoxShape.rectangle,
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(6)),
+          ),
+          child: Center(
+            child: Text(
+              "$number",
+              //'${patientInformationController.getTotal()}',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                  color: Theme.of(context).primaryColor
+                  //Color(0xFF52626F),
+                  ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}
+
 class RegisterationCard extends StatelessWidget {
   const RegisterationCard(
       {super.key, required this.register, required this.index});
 
-  final PatientInformation register;
+  final Patient register;
   final int index;
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-          color: Theme.of(context).hoverColor,
-          borderRadius: BorderRadius.circular(12)),
-      width: double.infinity,
-      height: 80,
-      child: Row(
-        children: [
-          const SizedBox(
-            width: 10,
-          ),
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Theme.of(context).primaryColor,
-            ),
-            child: Center(
-              child: Icon(
-                register.age >= 15 ? Icons.person : Icons.child_care,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+        decoration: BoxDecoration(
+            color: Theme.of(context).hoverColor,
+            borderRadius: BorderRadius.circular(12)),
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  Text(
-                    'Reg. no. - $index',
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold),
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    child: Center(
+                      child: Icon(
+                        register.age >= 15 ? Icons.person : Icons.child_care,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                  Expanded(
+                      child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'BMI: ${register.bMI}, H/B: ${register.height}/${register.bodyWeight}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.local_hospital,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Flexible(
+                              child: Text(
+                                register.operation,
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontWeight: FontWeight.bold),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  )),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Icon(
-                        Icons.local_hospital,
-                        color: Theme.of(context).primaryColor,
+                      Text(
+                        '${register.age} years old (${register.gender == Gender.male ? "M" : "F"})',
+                        style: const TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(
-                        width: 5,
+                        height: 5,
                       ),
-                      Text(
-                        register.operation,
-                        style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold),
-                      )
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Icon(Icons.calendar_month),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                            DateFormat('dd/MM/yyyy')
+                                .format(register.dateOfOperation),
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold),
+                          )
+                        ],
+                      ),
                     ],
-                  )
+                  ),
                 ],
               ),
-            ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  '${register.age} years old (${register.gender == Gender.male ? "M" : "F"})',
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.calendar_month),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      DateFormat('dd/MM/yyyy').format(register.dateOfOperation),
-                      style: const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.bold),
-                    )
-                  ],
-                )
-              ],
-            ),
-          )
-        ],
-      ),
-    );
+        )
+        // Row(
+        //   children: [
+        //     const SizedBox(
+        //       width: 10,
+        //     ),
+        //     Container(
+        //       width: 50,
+        //       height: 50,
+        //       decoration: BoxDecoration(
+        //         shape: BoxShape.circle,
+        //         color: Theme.of(context).primaryColor,
+        //       ),
+        //       child: Center(
+        //         child: Icon(
+        //           register.age >= 15 ? Icons.person : Icons.child_care,
+        //           color: Colors.white,
+        //         ),
+        //       ),
+        //     ),
+        //     Expanded(
+        //       child:
+        // Padding(
+        //         padding: const EdgeInsets.all(10),
+        //         child: Column(
+        //           crossAxisAlignment: CrossAxisAlignment.start,
+        //           mainAxisAlignment: MainAxisAlignment.spaceAround,
+        //           children: [
+        //             Flexible(
+        //               child: Text(
+        //                 'BMI: ${register.bMI}, H/B: ${register.height}/${register.bodyWeight}',
+        //                 style: const TextStyle(
+        //                   fontSize: 14,
+        //                   fontWeight: FontWeight.bold,
+        //                   overflow: TextOverflow.ellipsis,
+        //                 ),
+        //               ),
+        //             ),
+        //             Row(
+        //               mainAxisAlignment: MainAxisAlignment.start,
+        //               children: [
+        //                 Icon(
+        //                   Icons.local_hospital,
+        //                   color: Theme.of(context).primaryColor,
+        //                 ),
+        //                 const SizedBox(
+        //                   width: 5,
+        //                 ),
+        //                 Flexible(
+        //                   child: Text(
+        //                     register.operation,
+        //                     style: TextStyle(
+        //                         color: Theme.of(context).primaryColor,
+        //                         fontWeight: FontWeight.bold),
+        //                     overflow: TextOverflow.ellipsis,
+        //                   ),
+        //                 )
+        //               ],
+        //             )
+        //           ],
+        //         ),
+        //       ),
+        //     ),
+        //     Padding(
+        //       padding: const EdgeInsets.all(10.0),
+        //       child: Column(
+        //         mainAxisAlignment: MainAxisAlignment.spaceAround,
+        //         children: [
+        //           Text(
+        //             '${register.age} years old (${register.gender == Gender.male ? "M" : "F"})',
+        //             style: const TextStyle(
+        //                 fontSize: 14, fontWeight: FontWeight.bold),
+        //           ),
+        //           Row(
+        //             children: [
+        //               const Icon(Icons.calendar_month),
+        //               const SizedBox(
+        //                 width: 8,
+        //               ),
+        //               Text(
+        //                 DateFormat('dd/MM/yyyy').format(register.dateOfOperation),
+        //                 style: const TextStyle(
+        //                     fontSize: 14, fontWeight: FontWeight.bold),
+        //               )
+        //             ],
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        );
   }
 }

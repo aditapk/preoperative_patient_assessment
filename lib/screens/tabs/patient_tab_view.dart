@@ -6,9 +6,9 @@ import 'package:preoperative_patient_assessment/screens/widgets/custom_text_fiel
 import 'package:preoperative_patient_assessment/screens/widgets/text_divider.dart';
 
 class PatientTabView extends StatefulWidget {
-  const PatientTabView({super.key, required this.patientInformation});
+  const PatientTabView({super.key, required this.patientInfo});
 
-  final PatientInformation patientInformation;
+  final Patient patientInfo;
 
   @override
   State<PatientTabView> createState() => _PatientTabViewState();
@@ -23,20 +23,29 @@ class _PatientTabViewState extends State<PatientTabView> {
   TextEditingController diagnosisController = TextEditingController();
   TextEditingController operationController = TextEditingController();
   TextEditingController dateController = TextEditingController();
+  // physician contact
+  TextEditingController physicianNameController = TextEditingController();
+  TextEditingController physicianPhoneNumberController =
+      TextEditingController();
+  TextEditingController physicianDepartmentController = TextEditingController();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
+    
     // initial state
-    ageController.text = widget.patientInformation.age.toString();
-    bodyWeightController.text = widget.patientInformation.bodyWeight.toString();
-    heightController.text = widget.patientInformation.height.toString();
-    bMIController.text = widget.patientInformation.bMI.toString();
-    diagnosisController.text = widget.patientInformation.diagnosis;
-    operationController.text = widget.patientInformation.operation;
+    ageController.text = widget.patientInfo.age.toString();
+    bodyWeightController.text = widget.patientInfo.bodyWeight.toString();
+    heightController.text = widget.patientInfo.height.toString();
+    bMIController.text = widget.patientInfo.bMI.toString();
+    diagnosisController.text = widget.patientInfo.diagnosis;
+    operationController.text = widget.patientInfo.operation;
     dateController.text = DateFormat('dd/MM/yyyy')
-        .format(widget.patientInformation.dateOfOperation);
+        .format(widget.patientInfo.dateOfOperation);
+
+    physicianNameController.text = widget.patientInfo.physician.name;
+      physicianDepartmentController.text = widget.patientInfo.physician.department;
+      physicianPhoneNumberController.text =
+          widget.patientInfo.physician.phoneNumber;    
   }
 
   @override
@@ -53,7 +62,7 @@ class _PatientTabViewState extends State<PatientTabView> {
                     onChanged: (value) {},
                     title: const Text('Male'),
                     value: Gender.male,
-                    groupValue: widget.patientInformation.gender,
+                    groupValue: widget.patientInfo.gender,
                   ),
                 ),
                 Expanded(
@@ -61,7 +70,7 @@ class _PatientTabViewState extends State<PatientTabView> {
                     onChanged: (value) {},
                     title: const Text('Female'),
                     value: Gender.female,
-                    groupValue: widget.patientInformation.gender,
+                    groupValue: widget.patientInfo.gender,
                   ),
                 ),
               ],
@@ -136,6 +145,34 @@ class _PatientTabViewState extends State<PatientTabView> {
               label: 'Date of operation',
               readOnly: true,
               maxLines: 1,
+            ),
+            SizedBox(
+              height: heightSpace,
+            ),
+            const TextDivider(title: 'Physicient Contact'),
+            SizedBox(
+              height: heightSpace,
+            ),
+            CustomTextField(
+              label: 'Name',
+              controller: physicianNameController,
+              readOnly: true,
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            CustomTextField(
+              label: 'Department',
+              controller: physicianDepartmentController,
+              readOnly: true,
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            CustomTextField(
+              label: 'Phone Number',
+              controller: physicianPhoneNumberController,
+              readOnly: true,
             ),
           ],
         ),

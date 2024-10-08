@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:preoperative_patient_assessment/screens/consult_screen.dart/pediatrics_consult_screen.dart';
-import 'package:preoperative_patient_assessment/screens/pediatrics_evaluation/pediatrics_evaluation_model.dart';
-import 'package:preoperative_patient_assessment/screens/pediatrics_evaluation/pediatrics_evaluation_screen.dart';
+import 'package:preoperative_patient_assessment/screens/consult_screen/consult_screen.dart';
 import 'package:preoperative_patient_assessment/screens/pediatrics_evaluation/pediatrics_oneday_surgery_case_screen.dart';
+import 'package:preoperative_patient_assessment/screens/widgets/next_button.dart';
 import 'package:preoperative_patient_assessment/widgets/card_selection_widget.dart';
 
 import '../../controllers/app_state_controller.dart';
-import '../../models/check_list_data_model.dart';
-import '../../tests/evaluation_test.dart';
 
 class PediatricsPostOperativeICUScreen extends StatefulWidget {
   const PediatricsPostOperativeICUScreen({super.key});
@@ -23,6 +20,7 @@ class _PediatricsPostOperativeICUScreenState
   bool? answer;
 
   var pediatricsEvaluationController = Get.find<PedEvalStateController>();
+  var patientStateController = Get.find<PatientStateController>();
 
   @override
   Widget build(BuildContext context) {
@@ -84,11 +82,19 @@ class _PediatricsPostOperativeICUScreenState
             NextButton(
               onPressed: () {
                 if (answer ?? false) {
+                  // set answer
+                  pediatricsEvaluationController.setPostOperativeICU(true);
                   // YES, Test No. 6 [OK]
                   String consult = 'PED';
                   pediatricsEvaluationController.setConsult(consult);
+                  // update patient state
+                  patientStateController
+                      .setPediatricsEval(pediatricsEvaluationController.state!);
+                  // go to consult
                   Get.to(() => ConsultScreen(title: consult));
                 } else {
+                  // set answer
+                  pediatricsEvaluationController.setPostOperativeICU(false);
                   // No, Test No. 7 [OK]
                   Get.to(() => const PediatricsOnedaySurgeryCaseScreen());
                 }

@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:preoperative_patient_assessment/controllers/app_state_controller.dart';
+import 'package:preoperative_patient_assessment/models/patient_information_model.dart';
+import 'package:preoperative_patient_assessment/controllers/pediatric_evaluation_state.dart';
+import 'package:preoperative_patient_assessment/screens/summary_registeration_screen.dart';
+import 'package:preoperative_patient_assessment/services/patient_firestore_service.dart';
 
 import '../../widgets/custom_header_widget.dart';
+// ignore: library_prefixes
+import '../../controllers/adult_evaluation_state.dart';
+// ignore: library_prefixes
+import '../../controllers/obesity_evaluation_state.dart';
 
 class ConsultScreen extends StatelessWidget {
   const ConsultScreen({
@@ -17,10 +25,68 @@ class ConsultScreen extends StatelessWidget {
   final List<String>? labs;
   final double? fontSize;
 
+  // ignore: non_constant_identifier_names
+  clear_pediatrics_state() {
+    Get.find<PatientStateController>().clear();
+    Get.find<PedEvalStateController>().clear();
+    Get.find<CVSConditionController>().clear();
+    Get.find<RSCondictionController>().clear();
+    Get.find<CNSConditionController>().clear();
+    Get.find<EndocrineConditionController>().clear();
+    Get.find<HematoConditionController>().clear();
+    Get.find<OtherConditionController>().clear();
+  }
+
+  // ignore: non_constant_identifier_names
+  clear_adult_state() {
+    Get.find<PatientStateController>().clear();
+    // pediatrics evaluation state
+    Get.find<AdultEvalStateController>().clear();
+    // Cardiovascular system
+    Get.find<CardiovascularSystemController>().clear();
+    // Respiratory system
+    Get.find<RespiratorySystemController>().clear();
+    // Neurologic system
+    Get.find<NeurologicSystemController>().clear();
+    // Renal system
+    Get.find<RenalSystemController>().clear();
+    // Endocrine system
+    Get.find<EndocrineSystemController>().clear();
+    // Hematologic system
+    Get.find<HematologicSystemController>().clear();
+    // Hepatobility system
+    Get.find<HepatobiliaryController>().clear();
+    // Other system
+    Get.find<OtherSystemController>().clear();
+    // Medication
+    Get.find<MedicationController>().clear();
+    // High risk procedure
+    Get.find<HighriskProcedureController>().clear();
+    // One-day surgery
+    Get.find<OneDaySurgeryController>().clear();
+  }
+
+  // ignore: non_constant_identifier_names
+  clear_obesity_state() {
+    // obesity evaluation state
+    Get.find<ObesityEvalStateController>().clear();
+
+    // Cardiovascular system
+    Get.find<ObesityCardiovascularSystemController>().clear();
+
+    // Respiratory system
+    Get.find<ObesityRespiratorySystemController>().clear();
+
+    // Other abnormal conditions
+    Get.find<ObesityOtherAbnormalConditionController>().clear();
+    // STOP BANG score
+    Get.find<StopBANGScoreController>().clear();
+  }
+
   @override
   Widget build(BuildContext context) {
-    var controller = Get.find<ObesityEvalStateController>();
-    print(controller.state);
+    //var controller = Get.find<ObesityEvalStateController>();
+    //print(controller.state);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Summary'),
@@ -29,12 +95,29 @@ class ConsultScreen extends StatelessWidget {
           TextButton(
             onPressed: () {
               // todo : Finish action, RECORD data
-              // controller.criteriaForPreOperativeConsultation.summary =
-              //     "Consult PED";
-              // controller.addCriteriaForPreOperativeConsultation();
+              var patientRegisterController =
+                  Get.find<PatientRegisterStateController>();
+              var patientController = Get.find<PatientStateController>();
+              // on app
+              patientRegisterController.append(patientController.state!);
+              // to firestore database
+              PatientFirestoreService().post(patientController.state!).then(
+                (value) {
+                  // append id for patients on app
+                  patientRegisterController.updateId(value);
+                },
+              );
+              Get.offAll(() => const SummaryRegisterationScreen());
 
-              // // go to registeration no. xxx
-              // Get.to(() => const RegistrationScreen());
+              // clear state
+              if (patientController.state!.formType == FormType.pediatrics) {
+                clear_pediatrics_state();
+              } else if (patientController.state!.formType == FormType.adult) {
+                clear_adult_state();
+              } else {
+                clear_obesity_state();
+              }
+              // clear
             },
             child: const Text(
               'Finish',
