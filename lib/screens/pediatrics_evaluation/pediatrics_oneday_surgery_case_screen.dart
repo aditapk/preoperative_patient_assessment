@@ -5,10 +5,10 @@ import 'package:preoperative_patient_assessment/screens/consult_screen/consult_s
 import 'package:preoperative_patient_assessment/screens/widgets/next_button.dart';
 import '../../widgets/card_selection_widget.dart';
 
-
 class PediatricsOnedaySurgeryCaseScreen extends StatefulWidget {
-  const PediatricsOnedaySurgeryCaseScreen({super.key});
+  const PediatricsOnedaySurgeryCaseScreen({super.key, this.isEdit});
 
+  final bool? isEdit;
   @override
   State<PediatricsOnedaySurgeryCaseScreen> createState() =>
       _PediatricsOnedaySurgeryCaseScreenState();
@@ -19,6 +19,17 @@ class _PediatricsOnedaySurgeryCaseScreenState
   bool? answer;
   var pediatricsEvalController = Get.find<PedEvalStateController>();
   var patientStateController = Get.find<PatientStateController>();
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.isEdit ?? false) {
+      // update current answer for editing
+      answer = patientStateController.pediatricsEvaluation!.isOneDaySurgery;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,7 +98,10 @@ class _PediatricsOnedaySurgeryCaseScreenState
                   // update patient state
                   patientStateController
                       .setPediatricsEval(pediatricsEvalController.state!);
-                  Get.to(() => ConsultScreen(title: consult));
+                  Get.to(() => ConsultScreen(
+                        isEdit: widget.isEdit,
+                        title: consult,
+                      ));
                 } else {
                   // set answer state
                   pediatricsEvalController.setOnedaySurgery(false);
@@ -106,6 +120,7 @@ class _PediatricsOnedaySurgeryCaseScreenState
                       .setPediatricsEval(pediatricsEvalController.state!);
                   Get.to(
                     () => ConsultScreen(
+                      isEdit: widget.isEdit,
                       title: consult,
                       fontSize: 26,
                     ),

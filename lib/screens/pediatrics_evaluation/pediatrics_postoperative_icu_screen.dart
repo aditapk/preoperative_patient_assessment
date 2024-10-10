@@ -8,7 +8,9 @@ import 'package:preoperative_patient_assessment/widgets/card_selection_widget.da
 import '../../controllers/app_state_controller.dart';
 
 class PediatricsPostOperativeICUScreen extends StatefulWidget {
-  const PediatricsPostOperativeICUScreen({super.key});
+  const PediatricsPostOperativeICUScreen({super.key, this.isEdit});
+
+  final bool? isEdit;
 
   @override
   State<PediatricsPostOperativeICUScreen> createState() =>
@@ -21,6 +23,17 @@ class _PediatricsPostOperativeICUScreenState
 
   var pediatricsEvaluationController = Get.find<PedEvalStateController>();
   var patientStateController = Get.find<PatientStateController>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    if (widget.isEdit ?? false) {
+      answer =
+          patientStateController.pediatricsEvaluation!.isPostOperativeICU;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,12 +104,16 @@ class _PediatricsPostOperativeICUScreenState
                   patientStateController
                       .setPediatricsEval(pediatricsEvaluationController.state!);
                   // go to consult
-                  Get.to(() => ConsultScreen(title: consult));
+                  Get.to(() => ConsultScreen(
+                    isEdit: widget.isEdit,
+                    title: consult));
                 } else {
                   // set answer
                   pediatricsEvaluationController.setPostOperativeICU(false);
                   // No, Test No. 7 [OK]
-                  Get.to(() => const PediatricsOnedaySurgeryCaseScreen());
+                  Get.to(() => PediatricsOnedaySurgeryCaseScreen(
+                    isEdit: widget.isEdit,
+                  ));
                 }
               },
             )

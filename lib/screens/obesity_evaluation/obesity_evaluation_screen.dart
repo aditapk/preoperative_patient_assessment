@@ -15,8 +15,9 @@ import '../../models/obesity_evaluation_model.dart';
 import '../../controllers/obesity_evaluation_state.dart';
 
 class ObesityEvaluationScreen extends StatefulWidget {
-  const ObesityEvaluationScreen({super.key});
+  const ObesityEvaluationScreen({super.key, this.isEdit});
 
+  final bool? isEdit;
   @override
   State<ObesityEvaluationScreen> createState() =>
       _ObesityEvaluationScreenState();
@@ -39,10 +40,12 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
       Get.put(ObesityCardiovascularSystemController());
 
   // Respiratory system
-  var respiratorySystemController = Get.put(ObesityRespiratorySystemController());
+  var respiratorySystemController =
+      Get.put(ObesityRespiratorySystemController());
 
   // Other abnormal conditions
-  var otherAbnormalController = Get.put(ObesityOtherAbnormalConditionController());
+  var otherAbnormalController =
+      Get.put(ObesityOtherAbnormalConditionController());
   // STOP BANG score
   var stopBangScoreController = Get.put(StopBANGScoreController());
 
@@ -50,12 +53,27 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
   void initState() {
     super.initState();
 
-    // auto check in STOP BANG Condition
-    if (patientStateController.state!.bMI > 35) {
-      stopBangScoreController.state[4].check = true;
-    }
-    if (patientStateController.state!.age > 50) {
-      stopBangScoreController.state[5].check = true;
+    if (widget.isEdit ?? false) {
+      // Cardiovascular system condition
+      cardiovascularSystemController.setState(
+          patientStateController.obesityEvaluation!.cardiovascularSystem);
+      // respiratory system condition
+      respiratorySystemController.setState(
+          patientStateController.obesityEvaluation!.respiratorySystem);
+      // other abnormal condition
+      otherAbnormalController.setState(
+          patientStateController.obesityEvaluation!.otherAbnormalConditions);
+      // STOP BANG condition
+      stopBangScoreController.setState(
+          patientStateController.obesityEvaluation!.stopBANGCondition);
+    } else {
+      // auto check in STOP BANG Condition
+      if (patientStateController.state!.bMI > 35) {
+        stopBangScoreController.state[4].check = true;
+      }
+      if (patientStateController.state!.age > 50) {
+        stopBangScoreController.state[5].check = true;
+      }
     }
   }
 
@@ -196,6 +214,7 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
                         .setObesityEval(obisityEvaluationController.state!);
                     Get.to(
                       () => ConsultScreen(
+                        isEdit: widget.isEdit,
                         title: result.consult,
                         labs: result.labs,
                       ),

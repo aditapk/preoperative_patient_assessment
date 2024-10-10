@@ -15,11 +15,13 @@ import '../../controllers/obesity_evaluation_state.dart';
 class ConsultScreen extends StatelessWidget {
   const ConsultScreen({
     super.key,
+    this.isEdit,
     required this.title,
     this.detail,
     this.labs,
     this.fontSize,
   });
+  final bool? isEdit;
   final String title;
   final String? detail;
   final List<String>? labs;
@@ -99,14 +101,25 @@ class ConsultScreen extends StatelessWidget {
                   Get.find<PatientRegisterStateController>();
               var patientController = Get.find<PatientStateController>();
               // on app
-              patientRegisterController.append(patientController.state!);
-              // to firestore database
-              PatientFirestoreService().post(patientController.state!).then(
-                (value) {
-                  // append id for patients on app
-                  patientRegisterController.updateId(value);
-                },
-              );
+              if (isEdit ?? false) {
+                // replace state with ID
+                patientRegisterController.updatePatientWithId(
+                    patientController.id!, patientController.state!);
+
+                // update database with ID
+                PatientFirestoreService().updateWithId(
+                    patientController.id!, patientController.state!);
+              } else {
+                patientRegisterController.append(patientController.state!);
+                // to firestore database
+                PatientFirestoreService().post(patientController.state!).then(
+                  (value) {
+                    // append id for patients on app
+                    patientRegisterController.updateId(value);
+                  },
+                );
+              }
+
               Get.offAll(() => const SummaryRegisterationScreen());
 
               // clear state

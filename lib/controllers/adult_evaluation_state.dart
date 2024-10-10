@@ -6,6 +6,15 @@ import '../models/check_list_data_model.dart';
 class CardiovascularSystemController extends GetxController {
   var state = AdultCondition().cardiovascularSystemCondition;
 
+  setState(List<CheckListDataModel> newState) {
+    for (var ch in newState) {
+      if (ch.check == true) {
+        change(ch.title, ch.check);
+      }
+    }
+    update();
+  }
+
   change(title, value) {
     state[indexOf(title)].check = value;
     update();
@@ -35,6 +44,15 @@ class CardiovascularSystemController extends GetxController {
 
 class RespiratorySystemController extends GetxController {
   var state = AdultCondition().respiratorySystemCondition;
+
+  setState(List<CheckListDataModel> newState) {
+    for (var ch in newState) {
+      if (ch.check == true) {
+        change(ch.title, ch.check);
+      }
+    }
+    update();
+  }
 
   change(title, value) {
     state[indexOf(title)].check = value;
@@ -66,6 +84,15 @@ class RespiratorySystemController extends GetxController {
 class NeurologicSystemController extends GetxController {
   var state = AdultCondition().neurologicSystemCondition;
 
+  setState(List<CheckListDataModel> newState) {
+    for (var ch in newState) {
+      if (ch.check == true) {
+        change(ch.title, ch.check);
+      }
+    }
+    update();
+  }
+
   change(title, value) {
     state[indexOf(title)].check = value;
     update();
@@ -95,6 +122,15 @@ class NeurologicSystemController extends GetxController {
 
 class RenalSystemController extends GetxController {
   var state = AdultCondition().renalSystemCondition;
+
+  setState(List<CheckListDataModel> newState) {
+    for (var ch in newState) {
+      if (ch.check == true) {
+        change(ch.title, ch.check);
+      }
+    }
+    update();
+  }
 
   change(title, value) {
     state[indexOf(title)].check = value;
@@ -126,6 +162,15 @@ class RenalSystemController extends GetxController {
 class EndocrineSystemController extends GetxController {
   var state = AdultCondition().endocrineSystemCondition;
 
+  setState(List<CheckListDataModel> newState) {
+    for (var ch in newState) {
+      if (ch.check == true) {
+        change(ch.title, ch.check);
+      }
+    }
+    update();
+  }
+
   change(title, value) {
     state[indexOf(title)].check = value;
     update();
@@ -155,6 +200,15 @@ class EndocrineSystemController extends GetxController {
 
 class HematologicSystemController extends GetxController {
   var state = AdultCondition().hematologicSystemCondition;
+
+  setState(List<CheckListDataModel> newState) {
+    for (var ch in newState) {
+      if (ch.check == true) {
+        change(ch.title, ch.check);
+      }
+    }
+    update();
+  }
 
   change(title, value) {
     state[indexOf(title)].check = value;
@@ -186,6 +240,15 @@ class HematologicSystemController extends GetxController {
 class HepatobiliaryController extends GetxController {
   var state = AdultCondition().hepatobilitySystemCondition;
 
+  setState(List<CheckListDataModel> newState) {
+    for (var ch in newState) {
+      if (ch.check == true) {
+        change(ch.title, ch.check);
+      }
+    }
+    update();
+  }
+
   change(title, value) {
     state[indexOf(title)].check = value;
     update();
@@ -216,6 +279,15 @@ class HepatobiliaryController extends GetxController {
 class OtherSystemController extends GetxController {
   var state = AdultCondition().otherSystemCondition;
 
+  setState(List<CheckListDataModel> newState) {
+    for (var ch in newState) {
+      if (ch.check == true) {
+        change(ch.title, ch.check);
+      }
+    }
+    update();
+  }
+
   change(title, value) {
     state[indexOf(title)].check = value;
     update();
@@ -245,6 +317,15 @@ class OtherSystemController extends GetxController {
 
 class MedicationController extends GetxController {
   var state = AdultCondition().medicationCondition;
+
+  setState(List<CheckListDataModel> newState) {
+    for (var ch in newState) {
+      if (ch.check == true) {
+        change(ch.title, ch.check);
+      }
+    }
+    update();
+  }
 
   change(title, value) {
     state[indexOf(title)].check = value;

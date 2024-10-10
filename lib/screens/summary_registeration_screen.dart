@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:preoperative_patient_assessment/services/patient_firestore_service.dart';
 
 import '../constant.dart';
 import '../controllers/app_state_controller.dart';
@@ -22,6 +23,7 @@ class _SummaryRegisterationScreenState
     extends State<SummaryRegisterationScreen> {
   var patients = Get.find<PatientRegisterStateController>();
   var patient = Get.find<PatientStateController>();
+  var service = PatientFirestoreService();
 
   @override
   Widget build(BuildContext context) {
@@ -109,15 +111,42 @@ class _SummaryRegisterationScreenState
                                           patient
                                               .setState(patients.state[index]);
                                           patient.setId(patients.ids[index]);
-                                          
+
                                           Get.to(
                                               () =>
-                                                  const PatientInformationScreen(isEdit: true,),
+                                                  const PatientInformationScreen(
+                                                    isEdit: true,
+                                                  ),
                                               routeName:
                                                   'patient-information-screen');
                                         },
-                                        onLongPress: () {
-                                          print('delete');
+                                        onLongPress: () async {
+                                          bool? result = await Get.defaultDialog(
+                                              title: 'Delete',
+                                              middleText:
+                                                  'Do you want to delete this patient?\nIt will be permanantly deleted from application',
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Get.back(result: true);
+                                                  },
+                                                  child: const Text('Yes'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Get.back(result: false);
+                                                  },
+                                                  child: const Text('No'),
+                                                ),
+                                              ]);
+                                          if (result ?? false) {
+                                            // delete patient on database
+                                            String id = patients.ids[index];
+                                            service.deleteWithId(id);
+
+                                            // remove selected patient from register
+                                            patients.removeAt(index);
+                                          }
                                         },
                                       ),
                                     );

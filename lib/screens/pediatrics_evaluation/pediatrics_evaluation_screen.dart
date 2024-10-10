@@ -242,7 +242,9 @@ class _PediatricsEvaluationScreenState
                     // update pediatrics evaluation state
                     updateEvaluationState();
                     // Go to Post Operative ICU : [OK]
-                    Get.to(() => const PediatricsPostOperativeICUScreen());
+                    Get.to(() => PediatricsPostOperativeICUScreen(
+                          isEdit: widget.isEdit,
+                        ));
                   },
                 ),
               ],

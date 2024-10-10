@@ -425,7 +425,7 @@ class _PatientInformationScreenState extends State<PatientInformationScreen> {
   }
 
   updateState() {
-    patientStateController.state!.copyWith(
+    patientStateController.state = patientStateController.state!.copyWith(
       gender: selectedGender,
       age: int.parse(ageController.text),
       bodyWeight: double.parse(bodyweightController.text),
@@ -440,6 +440,7 @@ class _PatientInformationScreenState extends State<PatientInformationScreen> {
           department: physicianDepartment!,
           phoneNumber: physicianPhoneNumberController.text),
     );
+    patientStateController.update();
   }
 
   setNewState() {
@@ -480,10 +481,14 @@ class _PatientInformationScreenState extends State<PatientInformationScreen> {
           ));
     } else if (patientStateController.state!.formType == FormType.adult) {
       // Adult : Test No. 2 [OK]
-      Get.to(() => const AdultEvaluationScreen());
+      Get.to(() => AdultEvaluationScreen(
+            isEdit: widget.isEdit,
+          ));
     } else if (patientStateController.state!.formType == FormType.obesity) {
       // Obesity : Test No. 3 [OK]
-      Get.to(() => const ObesityEvaluationScreen());
+      Get.to(() => ObesityEvaluationScreen(
+            isEdit: widget.isEdit,
+          ));
     }
   }
 }

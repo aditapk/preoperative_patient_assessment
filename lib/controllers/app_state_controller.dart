@@ -14,8 +14,19 @@ class PatientRegisterStateController extends GetxController {
 
   var patientFirestoreService = PatientFirestoreService();
 
+  removeAt(int index) {
+    state.removeAt(index);
+    ids.removeAt(index);
+    update();
+  }
+
   append(Patient patient) {
     state.add(patient.copyWith());
+  }
+
+  updatePatientWithId(String pid, Patient patient) {
+    int index = ids.indexOf(pid);
+    state[index] = patient.copyWith();
   }
 
   updateId(String id) {
@@ -103,6 +114,14 @@ class PatientStateController extends GetxController {
     return state?.pediatricsEvaluation;
   }
 
+  AdultEvaluation? get adultEvaluation {
+    return state?.adultEvaluation;
+  }
+
+  ObesityEvaluation? get obesityEvaluation {
+    return state?.obesityEvaluation;
+  }
+
   setId(String newId) {
     id = newId;
     update();
@@ -120,10 +139,12 @@ class PatientStateController extends GetxController {
 
   setAdultEval(AdultEvaluation adultEval) {
     state = state!.copyWith(adultEvaluation: adultEval.copyWith());
+    update();
   }
 
   setObesityEval(ObesityEvaluation obesityEval) {
     state = state!.copyWith(obesityEvaluation: obesityEval.copyWith());
+    update();
   }
 
   clear() {

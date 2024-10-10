@@ -13,8 +13,9 @@ import '../../utilities/result_estimate_model.dart';
 import '../../widgets/card_selection_widget.dart';
 
 class AdultEvaluationScreen extends StatefulWidget {
-  const AdultEvaluationScreen({super.key});
+  const AdultEvaluationScreen({super.key, this.isEdit});
 
+  final bool? isEdit;
   @override
   State<AdultEvaluationScreen> createState() => _AdultEvaluationScreenState();
 }
@@ -41,7 +42,7 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
   // Endocrine system
   var endocrineSystemController = Get.put(EndocrineSystemController());
   // Hematologic system
-  var hemotologicSystemController = Get.put(HematologicSystemController());
+  var hematologicSystemController = Get.put(HematologicSystemController());
   // Hepatobility system
   var hepatobilitySystemController = Get.put(HepatobiliaryController());
   // Other system
@@ -53,6 +54,47 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
   var highRiskProcedureController = Get.put(HighriskProcedureController());
   // One-day surgery
   var oneDaySurgeryController = Get.put(OneDaySurgeryController());
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.isEdit ?? false) {
+      // cardiovascular system condition
+      cardiovascularSystemController.setState(
+          patientStateController.adultEvaluation!.cardiovascularSystem);
+      // respiratory system condition
+      respiratorySystemController
+          .setState(patientStateController.adultEvaluation!.respiratorySystem);
+      // neurologic system condition
+      neurologicSystemController
+          .setState(patientStateController.adultEvaluation!.neurologicSystem);
+      // renal system condition
+      renalSystemController
+          .setState(patientStateController.adultEvaluation!.renalSystem);
+      // endocrine system condition
+      endocrineSystemController
+          .setState(patientStateController.adultEvaluation!.endocrineSystem);
+      // hemotologics system condition
+      hematologicSystemController
+          .setState(patientStateController.adultEvaluation!.hematologicSystem);
+      // hepatobility system condition
+      hepatobilitySystemController.setState(
+          patientStateController.adultEvaluation!.hepatobiliarySystem);
+      // other system condition
+      othersSystemController
+          .setState(patientStateController.adultEvaluation!.othersSystem);
+      // medication condition
+      medicationController
+          .setState(patientStateController.adultEvaluation!.medication);
+      // high risk prodedure
+      highRiskProcedureController
+          .set(patientStateController.adultEvaluation!.highriskProcedure);
+      // One-day surgery 
+      oneDaySurgeryController
+          .set(patientStateController.adultEvaluation!.onedaySurgery);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +223,7 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
                   height: 12,
                 ),
                 GetBuilder<HematologicSystemController>(
-                  init: hemotologicSystemController,
+                  init: hematologicSystemController,
                   builder: (controller) => ConditionCard(
                     title: 'Hematologic System',
                     conditions: controller.state
@@ -321,11 +363,11 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
                         .setAdultEval(adultEvaluationController.state!);
                     Get.to(
                       () => ConsultScreen(
+                        isEdit: widget.isEdit,
                         title: result.consult,
                         labs: result.labs,
                       ),
                     );
-
                   },
                 ),
               ],
@@ -364,7 +406,7 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
         neurologicSystem: neurologicSystemController.copy(),
         renalSystem: renalSystemController.copy(),
         endocrineSystem: endocrineSystemController.copy(),
-        hematologicSystem: hemotologicSystemController.copy(),
+        hematologicSystem: hematologicSystemController.copy(),
         hepatobiliarySystem: hepatobilitySystemController.copy(),
         othersSystem: othersSystemController.copy(),
         medication: medicationController.copy(),
@@ -421,7 +463,7 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
         ) ||
         isSelectedIn(
           selected: selectedState,
-          list: hemotologicSystemController.state,
+          list: hematologicSystemController.state,
         ) ||
         selectedState.contains('On Anticoagulant')) {
       // update labs

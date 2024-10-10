@@ -196,7 +196,7 @@ class PediatricsEvaluation {
 
   factory PediatricsEvaluation.fromMap(Map<String, dynamic> map) {
     // CVS from map
-    var cvsObj = PediatricsCondition().cnsCondition;
+    var cvsObj = PediatricsCondition().cvsCondition;
     for (var obj in cvsObj) {
       if (List<String>.from(map['CVS'] as List)
           .any((e) => e.contains(obj.title))) {

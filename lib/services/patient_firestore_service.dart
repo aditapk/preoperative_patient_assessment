@@ -12,6 +12,24 @@ class PatientFirestoreService {
     return doc.id;
   }
 
+  Future<bool> updateWithId(String id, Patient patient) async {
+    Map<String, dynamic> map = patient.toMap();
+    try {
+      await collection.doc(id).set(map);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  Future<void> deleteWithId(String id) async {
+    try {
+      await collection.doc(id).delete();
+    } catch (err) {
+      print('Have some error on deleting');
+    }
+  }
+
   // get patients from firebase
   Future<Map<String, dynamic>> getAll() async {
     List<Patient> patients = [];
