@@ -11,6 +11,21 @@ import '../services/patient_firestore_service.dart';
 class PatientRegisterStateController extends GetxController {
   List<Patient> state = [];
   List<String> ids = [];
+  DateTime date = DateTime.now()
+      .copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
+
+  List<Patient> get getPatients {
+    return state
+        .where(
+          (p) => p.dateOfOperation.compareTo(date) == 0,
+        )
+        .toList();
+  }
+
+  updateDate(DateTime newDate) {
+    date = newDate;
+    update();
+  }
 
   var patientFirestoreService = PatientFirestoreService();
 
@@ -34,11 +49,11 @@ class PatientRegisterStateController extends GetxController {
   }
 
   int get total {
-    return state.length;
+    return getPatients.length;
   }
 
   int get adult {
-    return state
+    return getPatients
         .where(
           (e) => e.formType == FormType.adult || e.formType == FormType.obesity,
         )
@@ -46,7 +61,7 @@ class PatientRegisterStateController extends GetxController {
   }
 
   int get pediatrics {
-    return state
+    return getPatients
         .where(
           (e) => e.formType == FormType.pediatrics,
         )

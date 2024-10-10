@@ -24,6 +24,28 @@ class _SummaryRegisterationScreenState
   var patients = Get.find<PatientRegisterStateController>();
   var patient = Get.find<PatientStateController>();
   var service = PatientFirestoreService();
+  // DateTime currentDate = DateTime.now()
+  //     .copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
+
+  changeDate() async {
+    var date = await showDatePicker(
+      context: context,
+      initialDate: patients.date,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(
+            data: ThemeData().copyWith(
+                colorScheme: const ColorScheme.light(
+              primary: Color(0xFF017769),
+            )),
+            child: child!);
+      },
+    );
+    if (date != null && date.compareTo(patients.date) != 0) {
+      patients.updateDate(date);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +65,12 @@ class _SummaryRegisterationScreenState
                       total_no: controller.total,
                       adult_no: controller.adult,
                       pediatrics_no: controller.pediatrics,
-                      date: DateTime.now(),
+                      date: controller.date,
                       onDateChange: () {
                         // todo : select date to display patient registeration
                         print(
                             'todo : select date to display patient registeration');
+                        changeDate();
                       },
                     ),
                   ),
@@ -89,9 +112,10 @@ class _SummaryRegisterationScreenState
                             child: GetBuilder<PatientRegisterStateController>(
                               init: patients,
                               builder: (controller) => ListView(
-                                children: controller.state.map(
+                                children: controller.getPatients.map(
                                   (e) {
-                                    int index = controller.state.indexOf(e);
+                                    int index =
+                                        controller.getPatients.indexOf(e);
                                     return Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: GestureDetector(
@@ -101,11 +125,11 @@ class _SummaryRegisterationScreenState
                                         ),
                                         onTap: () {
                                           Get.to(
-                                            () => PatientRegisterationSceen(
-                                              index: index,
-                                            ),
-                                            routeName: 'patient-register-information'
-                                          );
+                                              () => PatientRegisterationSceen(
+                                                    index: index,
+                                                  ),
+                                              routeName:
+                                                  'patient-register-information');
                                         },
                                         onDoubleTap: () {
                                           // update current patient edit
