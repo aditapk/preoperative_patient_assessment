@@ -367,6 +367,7 @@ class _AdultEvaluationScreenState extends State<AdultEvaluationScreen> {
                         title: result.consult,
                         labs: result.labs,
                       ),
+                      routeName: 'consult-information'
                     );
                   },
                 ),

@@ -104,6 +104,7 @@ class _SummaryRegisterationScreenState
                                             () => PatientRegisterationSceen(
                                               index: index,
                                             ),
+                                            routeName: 'patient-register-information'
                                           );
                                         },
                                         onDoubleTap: () {
@@ -169,7 +170,7 @@ class _SummaryRegisterationScreenState
         backgroundColor: Theme.of(context).primaryColor,
         onPressed: () async {
           Get.to(() => const PatientInformationScreen(),
-              routeName: 'patient-information-screen');
+              routeName: 'patient-information');
         },
         child: const Icon(
           Icons.post_add,

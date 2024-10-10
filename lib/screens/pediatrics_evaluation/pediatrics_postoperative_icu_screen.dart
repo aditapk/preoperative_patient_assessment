@@ -106,14 +106,16 @@ class _PediatricsPostOperativeICUScreenState
                   // go to consult
                   Get.to(() => ConsultScreen(
                     isEdit: widget.isEdit,
-                    title: consult));
+                    title: consult),
+                    routeName: 'consult-information');
                 } else {
                   // set answer
                   pediatricsEvaluationController.setPostOperativeICU(false);
                   // No, Test No. 7 [OK]
                   Get.to(() => PediatricsOnedaySurgeryCaseScreen(
                     isEdit: widget.isEdit,
-                  ));
+                  ),
+                  routeName: 'pediatrics-oneday-surgery');
                 }
               },
             )

@@ -218,6 +218,7 @@ class _ObesityEvaluationScreenState extends State<ObesityEvaluationScreen> {
                         title: result.consult,
                         labs: result.labs,
                       ),
+                      routeName: 'consult-information'
                     );
                   },
                 ),

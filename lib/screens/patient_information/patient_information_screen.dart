@@ -478,17 +478,19 @@ class _PatientInformationScreenState extends State<PatientInformationScreen> {
       // Pediatrics : Test No. 1 [OK]
       Get.to(() => PediatricsEvaluationScreen(
             isEdit: widget.isEdit,
-          ));
+          ),
+          routeName: 'pediatrics-evaluation');
     } else if (patientStateController.state!.formType == FormType.adult) {
       // Adult : Test No. 2 [OK]
       Get.to(() => AdultEvaluationScreen(
             isEdit: widget.isEdit,
-          ));
+          ), routeName: 'adult-evaluation');
     } else if (patientStateController.state!.formType == FormType.obesity) {
       // Obesity : Test No. 3 [OK]
       Get.to(() => ObesityEvaluationScreen(
             isEdit: widget.isEdit,
-          ));
+          ),
+          routeName: 'obesity-evaluation');
     }
   }
 }

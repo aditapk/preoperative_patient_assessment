@@ -101,7 +101,8 @@ class _PediatricsOnedaySurgeryCaseScreenState
                   Get.to(() => ConsultScreen(
                         isEdit: widget.isEdit,
                         title: consult,
-                      ));
+                      ),
+                      routeName: 'consult-information');
                 } else {
                   // set answer state
                   pediatricsEvalController.setOnedaySurgery(false);
@@ -124,6 +125,7 @@ class _PediatricsOnedaySurgeryCaseScreenState
                       title: consult,
                       fontSize: 26,
                     ),
+                    routeName: 'consult-information'
                   );
                 }
               },

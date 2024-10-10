@@ -244,7 +244,8 @@ class _PediatricsEvaluationScreenState
                     // Go to Post Operative ICU : [OK]
                     Get.to(() => PediatricsPostOperativeICUScreen(
                           isEdit: widget.isEdit,
-                        ));
+                        ),
+                        routeName: 'pediatrics-post-operation-icu');
                   },
                 ),
               ],
